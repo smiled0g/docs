@@ -60,7 +60,7 @@
             "group": "Python Agents",
             "pages": [
               "integrations/python-agent-framework/crewai",
-              "integrations/python-agent-framework/langgraph",
+              "integrations/python-agent-framework/langchain",
               "integrations/python-agent-framework/llamaindex",
               "integrations/python-agent-framework/autogen"
             ]

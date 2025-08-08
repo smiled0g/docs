@@ -1,12 +1,271 @@
 ---
 title: "LlamaIndex"
-description: "Learn how to integrate Membit with LlamaIndex."
+description: "Integrate Membit's real-time social context into your LlamaIndex agents and applications using MCP tools."
 icon: "llamaindex"
 ---
 
-Welcome to the Membit and LlamaIndex integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your LlamaIndex applications.
+Enhance your LlamaIndex applications with real-time social media context from Membit. This integration allows your AI agents to access up-to-the-minute discussions, trends, and insights from platforms like X (Twitter), Farcaster, and more.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Python 3.10 or higher installed
+- A Membit account with API access
+- Basic familiarity with LlamaIndex agents
+
+<Warning>
+You'll need valid Membit API credentials. If you don't have access yet, [contact our team](TODO: add this mail? discord?) to get started.
+</Warning>
+
+## Installation
+
+Install the required LlamaIndex MCP tools package:
+
+```bash
+pip install llama-index-tools-mcp
+```
+
+<Tip>
+We recommend using a virtual environment to manage your dependencies and avoid conflicts.
+</Tip>
+
+## Quick Start
+
+<Steps>
+<Step title="Import the required modules">
+First, import the necessary components from LlamaIndex:
+
+```python
+from llama_index.tools.mcp import (
+    get_tools_from_mcp_url,
+    aget_tools_from_mcp_url,
+)
+from llama_index.core.agent import ReActAgent
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.llms.openai import OpenAI
+```
+</Step>
+
+<Step title="Get Membit tools from MCP server">
+Connect to Membit's MCP server to retrieve available tools:
+
+<Tabs>
+<Tab title="Async">
+```python
+# Async method
+tools = await aget_tools_from_mcp_url("MEMBIT_REMOTE_MCP_URL")
+```
+</Tab>
+
+<Tab title="Sync">
+```python
+# Synchronous method
+tools = get_tools_from_mcp_url("MEMBIT_REMOTE_MCP_URL")
+```
+</Tab>
+</Tabs>
+
+<Note>
+Replace `MEMBIT_REMOTE_MCP_URL` with your actual Membit MCP server URL provided.
+</Note>
+</Step>
+
+<Step title="Create and configure your agent">
+Set up a LlamaIndex ReAct agent with Membit tools:
+
+```python
+# Initialize your LLM
+llm = OpenAI(model="gpt-4o-mini")
+
+# Create the agent with Membit tools
+agent = ReActAgent(
+    tools=tools,
+    llm=llm,
+    memory=ChatMemoryBuffer.from_defaults(),
+    verbose=True,
+)
+```
+
+<Check>
+Your agent is now ready to access real-time social media context through Membit!
+</Check>
+</Step>
+
+<Step title="Query your agent">
+Start asking questions that leverage real-time social data:
+
+```python
+response = agent.query(
+    "Use cluster_search to find trending Bitcoin discussions today, "
+    "then use cluster_info to get details about the most interesting cluster."
+)
+
+print(response)
+```
+</Step>
+</Steps>
+
+## Complete Example
+
+Here's a full working example that demonstrates the integration:
+
+<CodeGroup>
+```python Basic Integration
+import asyncio
+
+from llama_index.core.agent import ReActAgent
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.llms.openai import OpenAI
+from llama_index.tools.mcp import aget_tools_from_mcp_url
+
+async def main():
+    # Get Membit tools
+    tools = await aget_tools_from_mcp_url("MEMBIT_REMOTE_MCP_URL")
+    
+    # Initialize LLM
+    llm = OpenAI(model="gpt-4o-mini")
+    
+    # Create agent
+    agent = ReActAgent(
+        tools=tools,
+        llm=llm,
+        memory=ChatMemoryBuffer.from_defaults(),
+        verbose=True,
+    )
+    
+    # Query for trending crypto discussions
+    response = await agent.aquery(
+        "What are the most trending discussions about Bitcoin today? "
+        "Use cluster_search to find the hottest topics and give me insights."
+    )
+    
+    print(response)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+</CodeGroup>
+
+## Available Membit Tools
+
+When you connect to the Membit MCP server, you'll have access to these powerful tools for real-time social media analysis:
+
+<AccordionGroup>
+<Accordion title="cluster_search - Find Trending Discussions">
+Get trending discussions across social platforms. This is the primary tool for finding topics of interest and understanding live conversations.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Trending discussion clusters (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding what's trending, discovering popular topics, understanding current conversations
+</Accordion>
+
+<Accordion title="cluster_info - Deep Dive into Discussions">
+Dive deeper into a specific trending discussion cluster. Use this to understand the context and participants of a particular conversation you discovered with `cluster_search`.
+
+**Parameters:**
+- `label` (str): Cluster label obtained from cluster_search
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Detailed cluster information (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Getting detailed context about specific conversations, understanding discussion participants
+</Accordion>
+
+<Accordion title="post_search - Search Raw Posts">
+Search for raw social posts. Use this when you need to find specific posts, though `cluster_search` is recommended for finding trending discussions.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Raw social posts (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding specific posts, getting raw social media content
+</Accordion>
+</AccordionGroup>
+
+<Tip>
+For most use cases, start with `cluster_search` to find trending topics, then use `cluster_info` to dive deeper into interesting conversations. Use `post_search` only when you need specific individual posts.
+</Tip>
+
+## Best Practices
+
+<Card title="Optimize Your Queries" icon="lightbulb">
+- Be specific with your search terms for better results
+- Use time-based queries (e.g., "today", "this week") for current context
+- Combine multiple topics with logical operators for comprehensive searches
+</Card>
+
+<Card title="Handle Rate Limits" icon="clock">
+- Implement proper retry logic for API calls
+- Cache results when appropriate to reduce API usage
+- Monitor your usage through the Membit dashboard
+</Card>
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Connection Issues">
+**Problem**: Cannot connect to Membit MCP server
+
+**Solutions**:
+- Verify your Membit MCP URL is correct
+- Check your network connection and firewall settings
+- Ensure your API credentials are valid and not expired
+- Try the synchronous method if async isn't working
+</Accordion>
+
+<Accordion title="No Results Returned">
+**Problem**: Queries return empty or limited results
+
+**Solutions**:
+- Make your search terms more general or use synonyms
+- Check if the topic is currently being discussed on social media
+- Verify your search timeframe isn't too restrictive
+- Try different query phrasings
+</Accordion>
+
+<Accordion title="Performance Issues">
+**Problem**: Slow response times or timeouts
+
+**Solutions**:
+- Use async methods for better performance
+- Implement caching for frequently requested data
+- Optimize your query complexity
+- Check your internet connection stability
+</Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Explore Use Cases" icon="compass" href="/use-cases">
+  Discover practical applications for Membit in different industries and scenarios.
+</Card>
+
+<Card title="API Reference" icon="code" href="/api-usage/python">
+  Dive deeper into Membit's Python API for custom implementations.
+</Card>
+
+<Card title="Get Support" icon="life-ring" href="/misc/faqs">
+  Find answers to common questions or reach out for help.
+</Card>
+</CardGroup>
+

@@ -1,12 +1,297 @@
 ---
 title: "CrewAI"
-description: "Learn how to integrate Membit with CrewAI."
+description: "Integrate Membit's real-time social context into your CrewAI agents and crews using MCP tools."
 icon: "crewai"
 ---
 
-Welcome to the Membit and CrewAI integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your CrewAI agents.
+Enhance your CrewAI applications with real-time social media context from Membit. This integration allows your AI agents to access up-to-the-minute discussions, trends, and insights from platforms like X (Twitter), Farcaster, and more.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Python 3.10 or higher installed
+- A Membit account with API access
+- Basic familiarity with CrewAI agents and crews
+- Node.js installed (for MCP remote client)
+
+<Warning>
+You'll need valid Membit API credentials and the MCP remote URL. If you don't have access yet, [contact our team](mailto:hello@membit.io) to get started.
+</Warning>
+
+## Installation
+
+Install the required packages for CrewAI and MCP integration:
+
+```bash
+# Install CrewAI tools
+pip install 'crewai-tools[mcp]'
+
+# Install MCP remote client (requires Node.js)
+npm install -g mcp-remote
+```
+
+<Tip>
+We recommend using a virtual environment to manage your Python dependencies and avoid conflicts.
+</Tip>
+
+## Quick Start
+
+<Steps>
+<Step title="Import required modules">
+Import the necessary components for CrewAI and MCP integration:
+
+```python
+from crewai import Agent, Task, Crew
+from crewai_tools import MCPServerAdapter
+from mcp import StdioServerParameters
+```
+</Step>
+
+<Step title="Configure MCP server parameters">
+Set up the connection to Membit's MCP server:
+
+```python
+server_params = StdioServerParameters(
+    command="npx",
+    args=[
+        "mcp-remote",
+        "MEMBIT_REMOTE_MCP_URL",
+    ],
+)
+```
+
+<Note>
+Make sure you have `mcp-remote` installed globally via npm for this to work.
+</Note>
+
+<Note>
+Replace `MEMBIT_REMOTE_MCP_URL` with your actual Membit MCP URL provided.
+</Note>
+</Step>
+
+<Step title="Create your Membit-powered agent">
+Use the MCPServerAdapter to connect Membit tools to your CrewAI agent:
+
+```python
+with MCPServerAdapter(server_params) as membit_tools:
+    # Create an agent with Membit tools
+    analyst_agent = Agent(
+        role="Social Media Data Analyst",
+        goal="Analyze trending social media data and provide insights using Membit tools",
+        backstory="You are an experienced social media analyst with expertise in identifying trends and understanding online conversations.",
+        allow_code_execution=False,
+        tools=membit_tools,
+    )
+```
+</Step>
+
+<Step title="Define your analysis task">
+Create a task that leverages Membit's real-time data:
+
+```python
+    analysis_task = Task(
+        description="Find the most trending discussions today about AI technology. Use cluster_search to identify hot topics and provide insights with source URLs.",
+        agent=analyst_agent,
+        expected_output="A comprehensive analysis of trending AI discussions with key insights and source URLs",
+    )
+```
+</Step>
+
+<Step title="Execute your crew">
+Create and run your CrewAI crew:
+
+```python
+    # Create and execute the crew
+    crew = Crew(
+        agents=[analyst_agent], 
+        tasks=[analysis_task]
+    )
+    
+    result = crew.kickoff()
+    print(result)
+```
+
+<Check>
+Your CrewAI agent is now powered by real-time social media context from Membit!
+</Check>
+</Step>
+</Steps>
+
+## Complete Example
+
+Here's a full working example that demonstrates the integration:
+
+<CodeGroup>
+```python Basic Integration
+from crewai import Agent, Task, Crew
+from crewai_tools import MCPServerAdapter
+from mcp import StdioServerParameters
+
+def main():
+    server_params = StdioServerParameters(
+        command="npx",
+        args=[
+            "mcp-remote",
+            "MEMBIT_REMOTE_MCP_URL",
+        ],
+    )
+
+    with MCPServerAdapter(server_params) as membit_tools:
+        # Create a social media analyst agent
+        analyst_agent = Agent(
+            role="Social Media Data Analyst",
+            goal="Analyze trending social media data and provide actionable insights",
+            backstory="You are an expert social media analyst who specializes in identifying trends, analyzing sentiment, and understanding online conversations across platforms.",
+            allow_code_execution=False,
+            tools=membit_tools,
+        )
+
+        # Create analysis task
+        analysis_task = Task(
+            description="What are the most trending discussions today related to Bitcoin? Use cluster_search to find hot topics and provide the best conversations to follow with URLs.",
+            agent=analyst_agent,
+            expected_output="A detailed analysis of trending Bitcoin discussions with source URLs and key insights",
+        )
+
+        # Execute the crew
+        crew = Crew(agents=[analyst_agent], tasks=[analysis_task])
+        result = crew.kickoff()
+        
+        print("Analysis Results:")
+        print(result)
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+
+## Available Membit Tools
+
+When you connect to the Membit MCP server through CrewAI, your agents will have access to these powerful tools:
+
+<AccordionGroup>
+<Accordion title="cluster_search - Find Trending Discussions">
+Get trending discussions across social platforms. This is the primary tool for finding topics of interest and understanding live conversations.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Trending discussion clusters (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding what's trending, discovering popular topics, understanding current conversations
+</Accordion>
+
+<Accordion title="cluster_info - Deep Dive into Discussions">
+Dive deeper into a specific trending discussion cluster. Use this to understand the context and participants of a particular conversation you discovered with `cluster_search`.
+
+**Parameters:**
+- `label` (str): Cluster label obtained from cluster_search
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Detailed cluster information (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Getting detailed context about specific conversations, understanding discussion participants
+</Accordion>
+
+<Accordion title="post_search - Search Raw Posts">
+Search for raw social posts. Use this when you need to find specific posts, though `cluster_search` is recommended for finding trending discussions.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Raw social posts (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding specific posts, getting raw social media content
+</Accordion>
+</AccordionGroup>
+
+<Tip>
+For most use cases, start with `cluster_search` to find trending topics, then use `cluster_info` to dive deeper into interesting conversations. Use `post_search` only when you need specific individual posts.
+</Tip>
+
+## Best Practices
+
+<Card title="Agent Role Design" icon="users">
+- Create specialized agents for different aspects of social media analysis
+- Use `cluster_search` agents for trend discovery
+- Use `cluster_info` agents for deep conversation analysis
+- Use `post_search` agents for specific content research
+</Card>
+
+<Card title="Task Orchestration" icon="list-check">
+- Chain tasks logically: discovery → analysis → content research
+- Use clear task descriptions that specify which Membit tools to use
+- Set realistic expected outputs for each task
+- Enable verbose mode during development for debugging
+</Card>
+
+<Card title="MCP Connection Management" icon="network-wired">
+- Always use the context manager (`with MCPServerAdapter`) for proper resource management
+- Handle connection failures gracefully in production
+- Verify your MCP URL and credentials before running crews
+</Card>
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="MCP Connection Issues">
+**Problem**: Cannot connect to Membit MCP server
+
+**Solutions**:
+- Verify `mcp-remote` is installed: `npm list -g mcp-remote`
+- Check your `MEMBIT_REMOTE_MCP_URL`
+- Ensure Node.js is properly installed and accessible
+- Test connectivity with `npx mcp-remote` directly
+</Accordion>
+
+<Accordion title="Tool Loading Failures">
+**Problem**: MCPServerAdapter fails to load tools
+
+**Solutions**:
+- Ensure the MCP server parameters are correct
+- Check network connectivity and firewall settings
+- Verify your Membit API credentials are valid
+- Try running the MCP server manually to test connection
+</Accordion>
+
+<Accordion title="Agent Execution Issues">
+**Problem**: Agents fail to use Membit tools effectively
+
+**Solutions**:
+- Be explicit in task descriptions about which tools to use
+- Set `allow_code_execution=False` unless specifically needed
+- Use verbose mode to see tool usage during execution
+- Ensure agents have clear, specific roles and goals
+</Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Explore Use Cases" icon="compass" href="/use-cases">
+  Discover practical applications for Membit in different industries and scenarios.
+</Card>
+
+<Card title="API Reference" icon="code" href="/api-usage/python">
+  Dive deeper into Membit's Python API for custom implementations.
+</Card>
+
+<Card title="Get Support" icon="life-ring" href="/misc/faqs">
+  Find answers to common questions or reach out for help.
+</Card>
+</CardGroup>

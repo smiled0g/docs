@@ -1,12 +1,302 @@
 ---
 title: "AutoGen"
-description: "Learn how to integrate Membit with AutoGen."
+description: "Integrate Membit's real-time social context into your AutoGen agents and multi-agent systems using MCP tools."
 icon: "autogen"
 ---
 
-Welcome to the Membit and AutoGen integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your AutoGen agents.
+Enhance your AutoGen applications with real-time social media context from Membit. This integration allows your AI agents to access up-to-the-minute discussions, trends, and insights from platforms like X (Twitter), Farcaster, and more.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Python 3.10 or higher installed
+- A Membit account with API access
+- Basic familiarity with AutoGen agents
+- Node.js installed (for MCP remote client)
+
+<Warning>
+You'll need valid Membit API credentials and the MCP remote URL. If you don't have access yet, [contact our team](mailto:hello@membit.io) to get started.
+</Warning>
+
+## Installation
+
+Install the required packages for AutoGen and MCP integration:
+
+```bash
+# Install AutoGen with MCP tools
+pip install autogenstudio
+
+# Install MCP remote client (requires Node.js)
+npm install -g mcp-remote
+```
+
+<Tip>
+We recommend using a virtual environment to manage your Python dependencies and avoid conflicts.
+</Tip>
+
+## Quick Start
+
+<Steps>
+<Step title="Import required modules">
+Import the necessary components for AutoGen and MCP integration:
+
+```python
+import asyncio
+
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.ui import Console
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_ext.tools.mcp import McpWorkbench, StdioServerParams
+```
+</Step>
+
+<Step title="Configure MCP server parameters">
+Set up the connection to Membit's MCP server:
+
+```python
+params = StdioServerParams(
+    command="npx",
+    args=[
+        "mcp-remote",
+        "MEMBIT_REMOTE_MCP_URL",
+    ],
+    read_timeout_seconds=60,
+)
+```
+
+<Note>
+Make sure you have `mcp-remote` installed globally via npm for this to work.
+</Note>
+
+<Note>
+Replace `MEMBIT_REMOTE_MCP_URL` with your actual Membit MCP URL provided.
+</Note>
+</Step>
+
+<Step title="Initialize your model client">
+Set up your language model client:
+
+```python
+model_client = OpenAIChatCompletionClient(model="gpt-4o-mini")
+```
+</Step>
+
+<Step title="Create your Membit-powered agent">
+Use McpWorkbench to connect Membit tools to your AutoGen agent:
+
+```python
+async with McpWorkbench(server_params=params) as workbench:
+    # List available tools
+    tools = await workbench.list_tools()
+    
+    # Create assistant agent with Membit tools
+    agent = AssistantAgent(
+        "membit_assistant",
+        model_client=model_client,
+        workbench=workbench,
+        reflect_on_tool_use=True,
+        model_client_stream=True,
+        system_message="You are a social media analyst with access to real-time data. Use Membit tools to analyze trending discussions and provide insights.",
+    )
+```
+</Step>
+
+<Step title="Run your agent">
+Execute your agent with a social media analysis task:
+
+```python
+    await Console(
+        agent.run_stream(
+            task="What are the most trending discussions about AI today? Use cluster_search to find hot topics and provide insights with URLs."
+        )
+    )
+```
+
+<Check>
+Your AutoGen agent is now powered by real-time social media context from Membit!
+</Check>
+</Step>
+</Steps>
+
+## Complete Example
+
+Here's a full working example that demonstrates the integration:
+
+<CodeGroup>
+```python Basic Integration
+import asyncio
+
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.ui import Console
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_ext.tools.mcp import McpWorkbench, StdioServerParams
+
+async def main() -> None:
+    # Configure MCP server connection
+    params = StdioServerParams(
+        command="npx",
+        args=[
+            "mcp-remote",
+            "MEMBIT_REMOTE_MCP_URL",
+        ],
+        read_timeout_seconds=60,
+    )
+    
+    # Initialize model client
+    model_client = OpenAIChatCompletionClient(model="gpt-4o-mini")
+
+    # Create and run agent with Membit tools
+    async with McpWorkbench(server_params=params) as workbench:
+        tools = await workbench.list_tools()
+        print("Available Membit Tools:")
+        for tool in tools:
+            print(f"- {tool.name}: {tool.description}")
+        
+        agent = AssistantAgent(
+            "membit_assistant",
+            model_client=model_client,
+            workbench=workbench,
+            reflect_on_tool_use=True,
+            model_client_stream=True,
+            system_message="You are a helpful social media analyst. Use cluster_search to find trending topics, cluster_info for detailed analysis, and post_search for specific posts.",
+        )
+        
+        await Console(
+            agent.run_stream(
+                task="What are the most trending discussions today related to Bitcoin? Use cluster_search to find hot topics and provide the best conversations to follow with URLs."
+            )
+        )
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+</CodeGroup>
+
+## Available Membit Tools
+
+When you connect to the Membit MCP server through AutoGen, your agents will have access to these powerful tools:
+
+<AccordionGroup>
+<Accordion title="cluster_search - Find Trending Discussions">
+Get trending discussions across social platforms. This is the primary tool for finding topics of interest and understanding live conversations.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Trending discussion clusters (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding what's trending, discovering popular topics, understanding current conversations
+</Accordion>
+
+<Accordion title="cluster_info - Deep Dive into Discussions">
+Dive deeper into a specific trending discussion cluster. Use this to understand the context and participants of a particular conversation you discovered with `cluster_search`.
+
+**Parameters:**
+- `label` (str): Cluster label obtained from cluster_search
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Detailed cluster information (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Getting detailed context about specific conversations, understanding discussion participants
+</Accordion>
+
+<Accordion title="post_search - Search Raw Posts">
+Search for raw social posts. Use this when you need to find specific posts, though `cluster_search` is recommended for finding trending discussions.
+
+**Parameters:**
+- `q` (str): Search query string
+- `limit` (int, optional): Maximum number of results to return (default: 10)
+- `output_format` (str, optional): Response format - "json" or "llm" (default: "json")
+- `timeout` (int, optional): Request timeout in seconds (default: 60, max: 120)
+
+**Returns:**
+- `dict`: Raw social posts (when output_format="json")
+- `str`: Formatted text response (when output_format="llm")
+
+**Best for:** Finding specific posts, getting raw social media content
+</Accordion>
+</AccordionGroup>
+
+<Tip>
+For most use cases, start with `cluster_search` to find trending topics, then use `cluster_info` to dive deeper into interesting conversations. Use `post_search` only when you need specific individual posts.
+</Tip>
+
+## Best Practices
+
+<Card title="Agent System Messages" icon="message">
+- Create clear, specific system messages that guide agents to use appropriate Membit tools
+- Specify which tool to use for different types of analysis
+- Include instructions about source attribution and URL inclusion
+</Card>
+
+<Card title="Workbench Management" icon="wrench">
+- Always use async context managers (`async with McpWorkbench`) for proper resource management
+- List available tools at startup to verify connection
+- Handle connection timeouts with appropriate read_timeout_seconds values
+</Card>
+
+<Card title="Multi-Agent Coordination" icon="users">
+- Assign specialized roles to different agents (trend discovery, analysis, content research)
+- Use RoundRobinGroupChat for coordinated multi-agent analysis
+- Enable tool reflection with `reflect_on_tool_use=True` for better tool usage
+</Card>
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="MCP Connection Issues">
+**Problem**: Cannot connect to Membit MCP server
+
+**Solutions**:
+- Verify `mcp-remote` is installed: `npm list -g mcp-remote`
+- Check your `MEMBIT_REMOTE_MCP_URL` is correct
+- Ensure Node.js is properly installed and accessible
+- Increase `read_timeout_seconds` if experiencing timeouts
+</Accordion>
+
+<Accordion title="Workbench Tool Loading">
+**Problem**: McpWorkbench fails to load tools
+
+**Solutions**:
+- Verify MCP server parameters are correct
+- Check network connectivity and firewall settings
+- Ensure your Membit API credentials are valid
+- Try listing tools first to verify connection: `await workbench.list_tools()`
+</Accordion>
+
+<Accordion title="Agent Tool Usage Issues">
+**Problem**: Agents don't use Membit tools effectively
+
+**Solutions**:
+- Make system messages more explicit about tool usage
+- Enable `reflect_on_tool_use=True` for better tool reasoning
+- Use `model_client_stream=True` for real-time feedback
+- Test with simpler, more direct task descriptions
+</Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Explore Use Cases" icon="compass" href="/use-cases">
+  Discover practical applications for Membit in different industries and scenarios.
+</Card>
+
+<Card title="API Reference" icon="code" href="/api-usage/python">
+  Dive deeper into Membit's Python API for custom implementations.
+</Card>
+
+<Card title="Get Support" icon="life-ring" href="/misc/faqs">
+  Find answers to common questions or reach out for help.
+</Card>
+</CardGroup>

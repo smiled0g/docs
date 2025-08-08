@@ -1,12 +1,131 @@
 ---
 title: "Cursor"
-description: "Learn how to integrate Membit with Cursor."
+description: "Learn how to integrate Membit's real-time context with Cursor's AI-powered code editor using custom MCP configuration."
 icon: "cursor"
 ---
 
-Welcome to the Membit and Cursor integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your Cursor environment.
+Cursor is an AI-powered code editor that enhances your development workflow with intelligent assistance. By integrating Membit with Cursor, you can access real-time social context directly within your coding environment, enabling your AI assistant to provide up-to-date insights about trending topics, current discussions, and breaking news while you work.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Cursor editor installed ([download here](https://cursor.com))
+- A Membit account with an API key ([get one here](https://membit.ai))
+- Basic familiarity with Cursor's interface and AI features
+
+<Tip>
+  Cursor's AI integration makes it perfect for developers who want real-time
+  context while coding, researching, or building applications!
+</Tip>
+
+## Setting Up Membit MCP Integration
+
+Follow these steps to integrate Membit with your Cursor environment:
+
+<Steps>
+<Step title="Access Cursor Settings">
+Open Cursor and navigate to the settings by clicking on the settings icon or using the keyboard shortcut.
+
+<Frame>
+<img src="/images/cursor/setting.png" alt="Cursor settings interface showing configuration options" />
+</Frame>
+</Step>
+
+<Step title="Navigate to Tools & Integrations">
+In the settings menu, locate and click on **Tools & Integrations** to access external service configurations.
+
+<Frame>
+  <img
+    src="/images/cursor/tools.png"
+    alt="Cursor tools and integrations settings page"
+  />
+</Frame>
+
+<Check>
+The Tools & Integrations section allows you to connect external services and tools to enhance Cursor's capabilities.
+</Check>
+</Step>
+
+<Step title="Add Custom MCP">
+  Click **Add Custom MCP** to create a new Model Context Protocol integration.
+</Step>
+
+<Step title="Configure Membit Remote MCP">
+Paste the following Membit remote MCP configuration into the configuration field:
+
+```json
+{
+  "mcpServers": {
+    "membit-remote-mcp": {
+      "command": "npx -y mcp-remote https://mcp.membit.ai/mcp/?Membit-Api-Key=<your-api-key>",
+      "env": {}
+    }
+  }
+}
+```
+
+<Warning>
+Replace `<your-api-key>` with your actual Membit API key. Keep this credential secure and don't share it with unauthorized users.
+</Warning>
+
+**Configuration Details:**
+
+- **Server Name**: `membit-remote-mcp`
+- **Command**: Uses npx to run the remote MCP client
+- **Environment**: Empty object for default environment variables
+
+</Step>
+
+<Step title="Enable Membit Remote MCP">
+After saving the configuration, turn on the **Membit Remote MCP** tool to activate the integration.
+
+<Frame>
+  <img
+    src="/images/cursor/turn-on.png"
+    alt="Cursor interface showing how to enable Membit Remote MCP tool"
+  />
+</Frame>
+
+<Check>
+Once enabled, Cursor's AI will have access to Membit's real-time context capabilities when processing your requests.
+</Check>
+</Step>
+</Steps>
+
+## Using Membit with Cursor
+
+Now that the integration is set up, you can start using Membit's real-time context in your development workflow:
+
+<Steps>
+<Step title="Start a Chat Session">
+Open Cursor's chat interface and begin a conversation with the AI assistant.
+</Step>
+
+<Step title="Ask Context-Aware Questions">
+Try asking questions that benefit from real-time context:
+
+- "What are the latest trends in web development?"
+- "Tell me about recent discussions in the AI community"
+- "What's currently trending in cryptocurrency?"
+- "Give me insights on the latest tech news"
+
+<Note>
+  When Cursor asks for permission to run tools, click **Run Tool** to allow
+  access to Membit's real-time data. Cursor requests permission every time it
+  uses external tools. You can bypass these permission prompts by adjusting the
+  tool permissions in Cursor settings if desired.
+</Note>
+
+<Frame caption="Testing Membit integration with Cursor's AI chat">
+  <img
+    src="/images/cursor/talk-with-chat.png"
+    alt="Cursor chat interface showing conversation with real-time context from Membit"
+  />
+</Frame>
+
+<Check>
+Your AI assistant will now provide responses enhanced with current, real-world context from Membit's data feed.
+</Check>
+</Step>
+</Steps>

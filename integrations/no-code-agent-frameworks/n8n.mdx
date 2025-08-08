@@ -1,12 +1,127 @@
 ---
-title: "n8n"
-description: "Learn how to integrate Membit with n8n."
+title: n8n
+description: "Learn how to integrate Membit's real-time context with your n8n workflows using the MCP client."
 icon: "n8n"
 ---
 
-Welcome to the Membit and n8n integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your n8n workflows.
+n8n is a powerful workflow automation tool that allows you to connect different services and build sophisticated automation. By integrating Membit with n8n, you can enhance your AI agents with real-time social context, enabling them to provide up-to-date insights about trending topics, news, and conversations happening across the web.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- An active n8n instance (cloud or self-hosted)
+- A Membit account with an API key ([get one here](https://membit.ai))
+- Basic familiarity with n8n workflows and AI agents
+
+<Tip>
+  If you don't have a Membit API key yet, visit [membit.ai](https://membit.ai)
+  and sign up for free to get instant access.
+</Tip>
+
+## Setting Up Membit MCP Client
+
+Follow these steps to integrate Membit with your n8n workflows:
+
+<Steps>
+<Step title="Open the Node Panel">
+In your n8n workflow editor, open the node panel to add a new node to your workflow.
+
+<Frame>
+<img src="/images/n8n/node-panel.png" alt="n8n node panel interface showing available nodes" />
+</Frame>
+</Step>
+
+<Step title="Search for MCP Client">
+In the node search bar, type "MCP client" to find the Model Context Protocol client tool.
+
+<Frame>
+  <img
+    src="/images/n8n/search-mcp-clinet.png"
+    alt="Searching for MCP client in n8n node panel"
+  />
+</Frame>
+
+<Check>
+The MCP Client Tool should appear in the search results. This tool enables n8n to communicate with external MCP servers like Membit.
+</Check>
+</Step>
+
+<Step title="Configure Membit MCP Client">
+Add the MCP Client Tool to your workflow and configure it with the following settings:
+
+```
+Endpoint: https://mcp.membit.ai/mcp/?Membit-Api-Key=<your-api-key>
+Server Transport: HTTP Streamable
+Authentication: None
+Tools to Include: All
+```
+
+<Warning>
+Replace `<your-api-key>` with your actual Membit API key.
+</Warning>
+
+</Step>
+</Steps>
+
+## Building Your First Workflow
+
+Now that your Membit MCP client is configured, let's create a complete workflow that uses real-time context:
+
+<Steps>
+<Step title="Add Required Nodes">
+Create a complete workflow by adding and connecting the following nodes:
+
+1. **Chat Trigger** - To receive user input
+2. **AI Agent** - To process requests and coordinate responses
+3. **Google Gemini Chat Model** - For natural language processing
+4. **Membit MCP Client** - For real-time context
+
+</Step>
+
+<Step title="Connect the Nodes">
+Connect them in this order:
+
+- Chat Trigger → AI Agent
+- Google Gemini Chat Model → AI Agent
+- Membit MCP Client → AI Agent
+
+<Frame>
+  <img
+    src="/images/n8n/example-workflow.png"
+    alt="Complete n8n workflow showing connected nodes for Membit integration"
+  />
+</Frame>
+
+<Check>
+The visual connections show the data flow - the AI Agent receives input from the Chat Trigger, uses the Gemini model for processing, and accesses Membit for real-time context.
+</Check>
+</Step>
+
+<Step title="Test Your Workflow">
+Use the chat interface to send a test message like:
+
+```
+"Tell me about crypto news"
+```
+
+or
+
+```
+"What's trending in AI today?"
+```
+
+Your AI agent should now respond with current, contextual information pulled from Membit's real-time data feed.
+
+<Frame caption="Example response showing real-time context from Membit">
+  <img
+    src="/images/n8n/example-result.png"
+    alt="n8n workflow execution result showing AI response with real-time context"
+  />
+</Frame>
+
+<Check>
+If successful, you'll see responses that include recent trends, discussions, and insights that wouldn't be available in static training data.
+</Check>
+</Step>
+</Steps>

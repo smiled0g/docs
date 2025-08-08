@@ -1,12 +1,167 @@
 ---
 title: "Gumloop"
-description: "Learn how to integrate Membit with Gumloop."
+description: "Learn how to integrate Membit's real-time context with your Gumloop workflows using MCP server."
 icon: "gumloop"
 ---
 
-Welcome to the Membit and Gumloop integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your Gumloop workflows.
+Gumloop is an intuitive no-code platform that enables you to build AI-powered workflows and automations. By integrating Membit with Gumloop, you can enhance your AI agents with real-time social context, allowing them to access current trends, breaking news, and live conversations from across the web.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- An active Gumloop account ([sign up here](https://gumloop.com))
+- A Membit account with an API key ([get one here](https://membit.ai))
+- Basic familiarity with Gumloop's workflow builder
+
+<Tip>
+  New to Gumloop? Their platform makes it incredibly easy to build AI workflows
+  without any coding experience.
+</Tip>
+
+## Setting Up Membit MCP Server
+
+Follow these steps to integrate Membit with your Gumloop workflows:
+
+<Steps>
+<Step title="Access Settings">
+Navigate to your Gumloop dashboard and click on the **Settings** option in the main menu.
+
+<Frame>
+<img src="/images/gumloop/go-to-setting.png" alt="Gumloop dashboard with settings menu highlighted" className="w-full max-h-64 object-contain" />
+</Frame>
+</Step>
+
+<Step title="Go to Personal Credentials">
+In the settings menu, locate and click on **Personal Credentials** to manage your external service connections.
+
+<Frame>
+<img src="/images/gumloop/personal-cred.png" alt="Gumloop settings page showing personal credentials section" className="w-full max-h-64 object-contain" />
+</Frame>
+</Step>
+
+<Step title="Add New Credentials">
+Click the **Add Credentials** button to create a new credential set for external services.
+
+<Frame>
+<img src="/images/gumloop/add-cred.png" alt="Add credentials button in Gumloop personal credentials page" />
+</Frame>
+</Step>
+
+<Step title="Search for MCP Server">
+In the credential type search, type "MCP server" and select the **MCP Server** option when it appears.
+
+<Frame>
+  <img
+    src="/images/gumloop/search-mcp-server.png"
+    alt="Searching for MCP server in Gumloop credentials options"
+  />
+</Frame>
+
+<Check>
+The MCP Server credential type enables Gumloop to connect with external Model Context Protocol servers like Membit.
+</Check>
+</Step>
+
+<Step title="Configure MCP Server Settings">
+Fill in the MCP server configuration with the following details:
+
+```
+URL: https://mcp.membit.ai/mcp/?Membit-Api-Key=<your-api-key>
+Label: membit-mcp
+```
+
+<Frame>
+  <img
+    src="/images/gumloop/mcp-server.png"
+    alt="MCP server configuration form in Gumloop with URL and label fields"
+  />
+</Frame>
+
+<Warning>
+Replace `<your-api-key>` with your actual Membit API key. Keep this credential secure and don't share it with unauthorized users.
+</Warning>
+
+Click **Save** to store your MCP server credentials.
+
+</Step>
+</Steps>
+
+## Building Your First Workflow
+
+Now that your Membit MCP server is configured, let's create a workflow that uses real-time context:
+
+<Steps>
+<Step title="Navigate to the Hub">
+Go to the **Hub** section in your Gumloop dashboard to access the workflow builder.
+
+<Frame>
+<img src="/images/gumloop/hub.png" alt="Gumloop hub interface showing available workflow options" />
+</Frame>
+</Step>
+
+<Step title="Create New Flow">
+  Click **Create Flow** to start building a new workflow from scratch.
+</Step>
+
+<Step title="Add Your First Node">
+Click **Add your first node** to begin building your workflow logic.
+
+<Frame>
+<img src="/images/gumloop/first-node.png" alt="Gumloop workflow builder showing add first node option" />
+</Frame>
+</Step>
+
+<Step title="Search for Ask AI">
+In the node search bar, type "Ask AI" to find the AI conversation node.
+
+<Frame>
+<img src="/images/gumloop/ask-ai.png" alt="Searching for Ask AI node in Gumloop node library" />
+</Frame>
+</Step>
+
+<Step title="Configure Ask AI Node">
+Select the **Ask AI** node and configure it with these settings:
+
+<Frame>
+  <img
+    src="/images/gumloop/ask-ai-detail.png"
+    alt="Ask AI node configuration interface in Gumloop"
+  />
+</Frame>
+
+**Basic Configuration:**
+
+- **Prompt**: "Tell me about crypto news using membit" (or your preferred query)
+- **AI Model**: Choose "Claude 4 Sonnet" or your preferred model
+
+<Frame>
+  <img
+    src="/images/gumloop/ask-ai-option.png"
+    alt="Ask AI node options showing MCP server connection settings"
+  />
+</Frame>
+
+**Advanced Options:**
+
+1. Click **"Show more options"**
+2. Set **"Connect MCP server"** to **Yes**
+3. Choose **MCP servers**: Select the "membit-mcp" you created earlier
+
+</Step>
+
+<Step title="Test Your Workflow">
+Click **Run** to execute your workflow and see Membit's real-time context in action.
+
+<Frame caption="Workflow execution showing real-time context from Membit">
+  <img
+    src="/images/gumloop/run.png"
+    alt="Gumloop workflow execution results showing AI response with real-time context"
+  />
+</Frame>
+
+<Check>
+If successful, your AI agent will respond with current information about your query topic, powered by Membit's real-time data feed.
+</Check>
+</Step>
+</Steps>

@@ -1,12 +1,183 @@
 ---
 title: "Langflow"
-description: "Learn how to integrate Membit with Langflow."
+description: "Learn how to integrate Membit's real-time context with your Langflow workflows using MCP tools."
 icon: "langflow"
 ---
 
-Welcome to the Membit and Langflow integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your Langflow workflows.
+Langflow is a visual framework for building multi-agent and RAG applications using a drag-and-drop interface. By integrating Membit with Langflow, you can enhance your AI agents with real-time social context, enabling them to access current trends, breaking news, and live conversations from across the web through a node-based visual workflow.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Langflow application installed ([download here](https://langflow.org))
+- A Membit account with an API key ([get one here](https://membit.ai))
+- Basic familiarity with Langflow's visual workflow builder
+- A Google AI Studio API key for the chat model (optional)
+
+<Tip>
+  Langflow provides an intuitive visual interface for building complex AI
+  workflows - perfect for both beginners and advanced users!
+</Tip>
+
+## Setting Up Membit MCP Tools
+
+Follow these steps to integrate Membit with your Langflow workflows:
+
+<Steps>
+<Step title="Create New Flow">
+Open the Langflow application and click **Add New Flow** to start building a new workflow.
+
+<Frame>
+<img src="/images/langflow/new-flow.png" alt="Langflow main interface with add new flow button" />
+</Frame>
+</Step>
+
+<Step title="Select Blank Flow">
+Choose **Blank Flow** to start with a clean workspace where you can build your custom workflow.
+
+<Frame>
+<img src="/images/langflow/blank-flow.png" alt="Langflow template selection showing blank flow option" />
+</Frame>
+</Step>
+
+<Step title="Search for MCP Tools">
+In the component search bar, type "MCP tools" to find the Model Context Protocol integration component.
+
+<Frame>
+  <img
+    src="/images/langflow/search-mcp-tools.png"
+    alt="Searching for MCP tools in Langflow component library"
+  />
+</Frame>
+
+<Check>
+The MCP Tools component enables Langflow to connect with external MCP servers like Membit, providing real-time context to your workflows.
+</Check>
+</Step>
+
+<Step title="Configure MCP Server">
+Configure the MCP Tools component by adding a new MCP server:
+
+1. Click **Add MCP Server**
+2. Select **STDIO** as the connection type
+
+<Frame>
+  <img
+    src="/images/langflow/stdio.png"
+    alt="MCP server configuration interface showing STDIO option"
+  />
+</Frame>
+
+**STDIO Configuration:**
+
+- **Name**: `membit-mcp`
+- **Command**: `npx -y mcp-remote https://mcp.membit.ai/mcp/?Membit-Api-Key=<your-api-key>`
+
+<Warning>
+Replace `<your-api-key>` with your actual Membit API key. Keep this credential secure and don't share it with unauthorized users.
+</Warning>
+
+3. Click **Add Server** to save the configuration
+4. Click **Toggle Tool Mode** to enable the MCP tools
+
+<Frame>
+<img src="/images/langflow/tool-mode.png" alt="MCP tools configuration showing toggle tool mode option" />
+</Frame>
+</Step>
+</Steps>
+
+## Building Your First Workflow
+
+Now let's create a complete workflow that uses Membit's real-time context:
+
+<Steps>
+<Step title="Add Agent Component">
+Search for "agent" in the component library and click **Add** to add an Agent component to your workflow.
+
+<Frame>
+  <img
+    src="/images/langflow/agent.png"
+    alt="Agent component in Langflow component library"
+  />
+</Frame>
+
+<Check>
+The Agent component acts as the orchestrator, managing how your workflow processes requests and coordinates responses.
+</Check>
+</Step>
+
+<Step title="Configure Agent Model">
+Configure the Agent component with your preferred language model:
+
+<Frame>
+  <img src="/images/langflow/config-agent.png" alt="Config agent component" />
+</Frame>
+
+- **Model Provider**: Select "Gemini 2.5 Flash" (or your preferred model)
+- **API Key**: Set your Google AI Studio API key
+
+<Tip>
+You can use other model providers like OpenAI, Anthropic, or local models depending on your preference and requirements.
+</Tip>
+</Step>
+
+<Step title="Connect MCP Tools">
+Connect the **Membit MCP** component to the **Agent Tools** input to provide real-time context capabilities.
+
+<Check>
+This connection enables your agent to access Membit's real-time social media context when processing user queries.
+</Check>
+</Step>
+
+<Step title="Add Chat Components">
+Add Chat Input and Chat Output components to create an interactive interface:
+
+1. **Chat Input** - To receive user messages
+2. **Chat Output** - To display agent responses
+
+<Frame>
+  <img
+    src="/images/langflow/chat.png"
+    alt="Chat components in Langflow showing input and output nodes"
+  />
+</Frame>
+
+**Connection Pattern:**
+
+- **Chat Input** → **Agent Input**
+- **Agent Response** → **Chat Output**
+
+<Frame>
+<img src="/images/langflow/chat-with-agent.png" alt="Complete Langflow workflow showing connected components" />
+</Frame>
+</Step>
+
+<Step title="Test Your Workflow">
+Click **Playground** to test your workflow with real-time context from Membit.
+
+<Frame>
+  <img
+    src="/images/langflow/playground.png"
+    alt="Langflow playground interface for testing workflows"
+  />
+</Frame>
+
+Try asking questions like:
+
+- "Tell me about crypto trends"
+- "What's happening in AI today?"
+- "Give me the latest tech news"
+
+<Frame caption="Testing the workflow with real-time context from Membit">
+  <img
+    src="/images/langflow/talk-with-chat.png"
+    alt="Langflow chat interface showing conversation with real-time context"
+  />
+</Frame>
+
+<Check>
+If successful, your agent will respond with current information about your query topic, powered by Membit's real-time data feed.
+</Check>
+</Step>
+</Steps>

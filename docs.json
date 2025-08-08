@@ -52,7 +52,6 @@
               "integrations/no-code-agent-frameworks/gumloop",
               "integrations/no-code-agent-frameworks/flowise",
               "integrations/no-code-agent-frameworks/langflow",
-              "integrations/no-code-agent-frameworks/chainlit",
               "integrations/no-code-agent-frameworks/cursor"
             ]
           },

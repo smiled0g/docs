@@ -1,12 +1,178 @@
 ---
 title: "Flowise"
-description: "Learn how to integrate Membit with Flowise."
+description: "Learn how to integrate Membit's real-time context with your Flowise chatflows using Custom MCP nodes."
 icon: "flowise"
 ---
 
-Welcome to the Membit and Flowise integration guide. This section will provide you with all the information you need to connect Membit's real-time context to your Flowise workflows.
+Flowise is a visual low-code platform for building AI-powered chatflows and agents. By integrating Membit with Flowise, you can enhance your AI agents with real-time social context, enabling them to access current trends, breaking news, and live conversations from across the web through a visual drag-and-drop interface.
 
-<Info>
-  This documentation is currently under development. Please check back soon for
-  more details.
-</Info>
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- An active Flowise instance (cloud or self-hosted)
+- A Membit account with an API key ([get one here](https://membit.ai))
+- Basic familiarity with Flowise's visual workflow builder
+- A Google AI Studio API key for the chat model (optional)
+
+<Tip>
+  Flowise makes building AI workflows incredibly intuitive with its visual
+  node-based interface - no coding required!
+</Tip>
+
+## Setting Up Membit Custom MCP
+
+Follow these steps to integrate Membit with your Flowise chatflows:
+
+<Steps>
+<Step title="Access Chatflows">
+Navigate to your Flowise dashboard and click **Chatflows** in the menu bar to access the workflow builder.
+
+<Frame>
+<img src="/images/flowise/chatflows.png" alt="Flowise dashboard showing chatflows menu option" />
+</Frame>
+</Step>
+
+<Step title="Create New Chatflow">
+Click **Add New** to start building a new chatflow from scratch.
+
+<Frame>
+<img src="/images/flowise/add-new.png" alt="Flowise add new chatflow button" />
+</Frame>
+</Step>
+
+<Step title="Add Node Panel">
+Click **Add Node** in the top left corner to open the node library.
+
+<Frame>
+<img src="/images/flowise/add-node.png" alt="Flowise add node button in workflow editor" />
+</Frame>
+</Step>
+
+<Step title="Search for Custom MCP">
+In the node search bar, type "Custom MCP" to find the Model Context Protocol integration node.
+
+<Frame>
+  <img
+    src="/images/flowise/custom-mcp.png"
+    alt="Searching for Custom MCP node in Flowise node library"
+  />
+</Frame>
+
+<Check>
+The Custom MCP node enables Flowise to connect with external MCP servers like Membit, providing real-time context to your chatflows.
+</Check>
+</Step>
+
+<Step title="Configure Custom MCP Node">
+Drag and drop the **Custom MCP** node to your chatflow board, then configure it with your Membit server details.
+
+<Frame>
+  <img
+    src="/images/flowise/custom-mcp-config.png"
+    alt="Custom MCP node configuration interface in Flowise"
+  />
+</Frame>
+
+**MCP Server Configuration:**
+Set the configuration using JSON format and replace with your Membit API key:
+
+```json
+{
+  "url": "https://mcp.membit.ai/mcp/?Membit-Api-Key=<your-api-key>"
+}
+```
+
+<Warning>
+Replace `<your-api-key>` with your actual Membit API key. Keep this credential secure and don't share it with unauthorized users.
+</Warning>
+
+After configuration, click the **refresh button** to load available actions, then select the actions you want to use.
+
+</Step>
+</Steps>
+
+## Building Your First Chatflow
+
+Now let's create a complete chatflow that uses Membit's real-time context:
+
+<Steps>
+<Step title="Add Chat Model">
+Search for and add a **ChatGoogleGenerativeAI** node to handle the conversational AI.
+
+<Frame>
+  <img
+    src="/images/flowise/search-chat.png"
+    alt="Searching for ChatGoogleGenerativeAI node in Flowise"
+  />
+</Frame>
+
+**Configuration:**
+
+- Set up your Google AI Studio API key credential
+- Select your preferred model (e.g., Gemini Pro)
+
+<Frame>
+<img src="/images/flowise/chat-config.png" alt="ChatGoogleGenerativeAI node configuration in Flowise" />
+</Frame>
+</Step>
+
+<Step title="Add Tool Agent">
+Search for and add a **Tool Agent** node to coordinate between the chat model and external tools.
+
+<Frame>
+  <img
+    src="/images/flowise/search-tool-agent.png"
+    alt="Searching for Tool Agent node in Flowise"
+  />
+</Frame>
+
+<Check>
+The Tool Agent acts as the orchestrator, managing how your chat model interacts with external tools like Membit.
+</Check>
+</Step>
+
+<Step title="Add Buffer Memory">
+Search for and add a **Buffer Memory** node to maintain conversation context.
+
+<Frame>
+<img src="/images/flowise/search-buffer.png" alt="Searching for Buffer Memory node in Flowise" />
+</Frame>
+</Step>
+
+<Step title="Connect the Nodes">
+Connect all the nodes to create a functioning chatflow:
+
+<Frame>
+  <img
+    src="/images/flowise/connect-tools.png"
+    alt="Connected Flowise chatflow showing all nodes linked together"
+  />
+</Frame>
+
+**Connection Pattern:**
+
+- **Custom MCP** → **Tools** (Tool Agent)
+- **ChatGoogleGenerativeAI** → **Tool Calling Chat Model** (Tool Agent)
+- **Buffer Memory** → **Memory** (Tool Agent)
+
+<Tip>
+The visual connections show the data flow - the Tool Agent receives tools from Custom MCP, uses the chat model for responses, and maintains memory for context.
+</Tip>
+</Step>
+
+<Step title="Test Your Chatflow">
+Once all nodes are connected, test your chatflow by starting a conversation.
+
+<Frame caption="Testing the chatflow with real-time context from Membit">
+  <img
+    src="/images/flowise/talk-with-chat.png"
+    alt="Flowise chat interface showing conversation with real-time context"
+  />
+</Frame>
+
+<Check>
+Try asking questions like "What's trending in AI today?" or "Tell me about recent crypto news" to see Membit's real-time context in action.
+</Check>
+</Step>
+</Steps>
